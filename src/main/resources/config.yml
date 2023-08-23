@@ -1,0 +1,17 @@
+ip: 127.0.0.1
+port: 23333
+server-name: '服务器'
+server-prefix: '[服务器|s]'
+group-message-prefix: '§7[§b群§7]§r '
+trigger: 's'
+broadcast-trigger: 'all'
+token: 'mytoken'
+notify-on-join-and-quit: true
+enable-whitelist: true
+# in server ticks
+whitelist-timeout: 60
+not-whitelisted-message: '请加QQ群 594048732 自助获取白名单！'
+banned-message: '你已被封禁，请加QQ群 594048732 申请解封！'
+timeout-message: '白名单认证超时，请加QQ群 594048732 更新白名单！'
+# in server ticks
+heart-beat-interval: 900

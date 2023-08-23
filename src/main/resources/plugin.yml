@@ -1,0 +1,4 @@
+api-version: 1.13
+name: AiChan-spigot
+version: 1.0
+main: fun.kaituo.aichanspigot.AiChanSpigot

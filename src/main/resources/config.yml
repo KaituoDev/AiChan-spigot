@@ -10,8 +10,8 @@ notify-on-join-and-quit: true
 enable-whitelist: true
 # in server ticks
 whitelist-timeout: 60
-not-whitelisted-message: '请加QQ群 594048732 自助获取白名单！'
-banned-message: '你已被封禁，请加QQ群 594048732 申请解封！'
-timeout-message: '白名单认证超时，请加QQ群 594048732 更新白名单！'
+not-whitelisted-message: '请加 QQ 群 <your group id> 自助获取白名单！'
+banned-message: '你已被封禁，请加 QQ 群 <your group id> 申请解封！'
+timeout-message: '白名单认证超时，请加 QQ 群 <your group id> 更新白名单！'
 # in server ticks
 heart-beat-interval: 900

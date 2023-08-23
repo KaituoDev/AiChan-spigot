@@ -67,3 +67,5 @@ atlassian-ide-plugin.xml
 # Local libraries (due to YFshadaow's network issue)
 /libs
 */libs
+
+gradle.properties

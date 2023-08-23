@@ -29,12 +29,16 @@ public class SocketClient {
     public boolean sendPacket(SocketPacket packet) {
 
         String data = JSON.toJSONString(packet);
+        String encryptedData;
+        try {
+            Key key = new Key(plugin.getConfig().getString("token"));
+            Token token = Token.generate(key, data);
+            encryptedData = token.serialise();
+        } catch (Exception e) {
+            this.plugin.getLogger().warning("信息加密失败，请检查token是否合法！");
+            return false;
+        }
 
-
-        Key key = new Key(plugin.getConfig().getString("token"));
-        Token token = Token.generate(key, data);
-
-        String encryptedData = token.serialise();
         if (this.nbc != null && this.nbc.isOpen())
             try {
                 this.nbc.write(encryptedData + SocketPacket.DELIMITER);

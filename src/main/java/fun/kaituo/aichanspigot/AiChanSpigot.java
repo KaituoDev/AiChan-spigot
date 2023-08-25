@@ -49,10 +49,7 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     public void kickPlayerIfOnline(String name, String message) {
         Bukkit.getScheduler().runTask(this, () -> {
             Player p = Bukkit.getPlayer(name);
-            if (p == null) {
-                return;
-            }
-            if (!p.isOnline()) {
+            if (p == null || !p.isOnline()) {
                 return;
             }
             p.kickPlayer(message);
@@ -61,15 +58,13 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
 
     public void onEnable() {
         saveDefaultConfig();
-        if (getConfig().getBoolean("notify-on-join-and-quit"))
-            Bukkit.getPluginManager().registerEvents(new NotifyOnJoinAndLeaveListener(this), this);
-        if (getConfig().getBoolean("enable-whitelist"))
-            Bukkit.getPluginManager().registerEvents(new WhitelistListener(this), this);
+        registerEventIfEnabled("notify-on-join-and-quit", new NotifyOnJoinAndLeaveListener(this));
+        registerEventIfEnabled("enable-whitelist", new WhitelistListener(this));
         Bukkit.getPluginManager().registerEvents(this, this);
+
         getLogger().info("AiChanSpigot 已加载");
-        this.client = new SocketClient(this);
-        this.handler = new ClientHandler(this);
-        this.commandSender = new AiChanSpigotRemoteConsoleCommandSender(this);
+
+        initializeComponents();
     }
 
     public void onDisable() {
@@ -81,17 +76,26 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent apme) {
-        if (apme.isCancelled()) {
+    public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent e) {
+        if (e.isCancelled()) {
             return;
         }
         SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        String msg = apme.getPlayer().getName() + "：" + apme.getMessage();
-        msg = msg.replaceAll("&.", "");
-        msg = msg.replaceAll("§.", "");
+        String msg = String.format("%s: %s", e.getPlayer().getName(), e.getMessage());
+        msg = msg.replaceAll("&.|§.", "");
         packet.set(0, getConfig().getString("server-prefix") + msg);
         this.client.sendPacket(packet);
     }
 
+    private void registerEventIfEnabled(String configKey, Listener listener) {
+        if (getConfig().getBoolean(configKey)) {
+            Bukkit.getPluginManager().registerEvents(listener, this);
+        }
+    }
 
+    private void initializeComponents() {
+        this.client = new SocketClient(this);
+        this.handler = new ClientHandler(this);
+        this.commandSender = new AiChanSpigotRemoteConsoleCommandSender(this);
+    }
 }

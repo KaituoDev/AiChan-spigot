@@ -1,28 +1,28 @@
 plugins {
-    id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id("java")
+    id("com.github.johnrengelman.shadow").version('8.1.1')
 }
-
-group = 'fun.kaituo.miraispigot'
-version = '1.0'
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
 
 dependencies {
-    //compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
-    compileOnly('org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT')
+    compileOnly("org.spigotmc:spigot-api:${property("spigot_api_version")}")
+
     // https://mvnrepository.com/artifact/org.xsocket/xSocket
-    implementation("org.xsocket:xSocket:2.8.15")
-    // https://mvnrepository.com/artifact/com.alibaba/fastjson
-    implementation("com.alibaba:fastjson:2.0.39")
+    implementation("org.xsocket:xSocket:${property("xsocket_version")}")
+
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation("com.google.code.gson:gson:${property("gson_version")}")
+
     // https://mvnrepository.com/artifact/com.macasaet.fernet/fernet-java8
-    implementation("com.macasaet.fernet:fernet-java8:1.5.0")
+    implementation("com.macasaet.fernet:fernet-java8:${property("fernet_version")}")
 }
 
-test {
-    useJUnitPlatform()
+base {
+    archivesName = "${property("archives_base_name")}"
+    version = "${property("version")}"
 }

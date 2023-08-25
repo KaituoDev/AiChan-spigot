@@ -8,6 +8,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     private final AiChanSpigot plugin;
     private boolean isOp = true;
     private final Set<PermissionAttachment> permissionAttachments = new HashSet<>();
-    private String serverPrefix;
+    private final String serverPrefix;
 
     public AiChanSpigotRemoteConsoleCommandSender(AiChanSpigot plugin) {
         this.plugin = plugin;
@@ -27,11 +28,9 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     }
 
     @Override
-    public void sendMessage(String s) {
+    public void sendMessage(@NotNull String s) {
         SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        String msg = s;
-        msg = msg.replaceAll("&.", "");
-        msg = msg.replaceAll("§.", "");
+        String msg = s.replaceAll("&.|§.", "");
         packet.set(0, serverPrefix + msg);
         plugin.getClient().sendPacket(packet);
     }
@@ -44,7 +43,7 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     }
 
     @Override
-    public void sendMessage(UUID uuid, String s) {
+    public void sendMessage(UUID uuid, @NotNull String s) {
         sendMessage(s);
     }
 
@@ -54,42 +53,42 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     }
 
     @Override
-    public Server getServer() {
+    public @NotNull Server getServer() {
         return plugin.getServer();
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "AiChan";
     }
 
     @Override
-    public Spigot spigot() {
+    public @NotNull Spigot spigot() {
         return plugin.getCommandSender().spigot();
     }
 
     @Override
-    public boolean isPermissionSet(String s) {
+    public boolean isPermissionSet(@NotNull String s) {
         return true;
     }
 
     @Override
-    public boolean isPermissionSet(Permission permission) {
+    public boolean isPermissionSet(@NotNull Permission permission) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(String s) {
+    public boolean hasPermission(@NotNull String s) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(Permission permission) {
+    public boolean hasPermission(@NotNull Permission permission) {
         return true;
     }
 
     @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b) {
+    public @NotNull PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String s, boolean b) {
         PermissionAttachment attachment = new PermissionAttachment(plugin, this);
         attachment.setPermission(s, b);
         permissionAttachments.add(attachment);
@@ -97,35 +96,31 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     }
 
     @Override
-    public PermissionAttachment addAttachment(Plugin plugin) {
+    public @NotNull PermissionAttachment addAttachment(@NotNull Plugin plugin) {
         PermissionAttachment attachment = new PermissionAttachment(plugin, this);
         permissionAttachments.add(attachment);
         return attachment;
     }
 
     @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String s, boolean b, int i) {
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String s, boolean b, int i) {
         PermissionAttachment attachment = new PermissionAttachment(plugin, this);
         attachment.setPermission(s, b);
         permissionAttachments.add(attachment);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            permissionAttachments.remove(attachment);
-        }, i);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> permissionAttachments.remove(attachment), i);
         return attachment;
     }
 
     @Override
-    public PermissionAttachment addAttachment(Plugin plugin, int i) {
+    public PermissionAttachment addAttachment(@NotNull Plugin plugin, int i) {
         PermissionAttachment attachment = new PermissionAttachment(plugin, this);
         permissionAttachments.add(attachment);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            permissionAttachments.remove(attachment);
-        }, i);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> permissionAttachments.remove(attachment), i);
         return attachment;
     }
 
     @Override
-    public void removeAttachment(PermissionAttachment permissionAttachment) {
+    public void removeAttachment(@NotNull PermissionAttachment permissionAttachment) {
         permissionAttachments.remove(permissionAttachment);
     }
 
@@ -135,7 +130,7 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     }
 
     @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions() {
+    public @NotNull Set<PermissionAttachmentInfo> getEffectivePermissions() {
         Set<PermissionAttachmentInfo> info = new HashSet<>();
         for (PermissionAttachment a : new HashSet<>(permissionAttachments)) {
             for (Map.Entry<String, Boolean> e : a.getPermissions().entrySet()) {

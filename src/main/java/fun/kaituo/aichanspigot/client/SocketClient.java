@@ -56,8 +56,9 @@ public class SocketClient {
             SocketPacket packet = new SocketPacket(SocketPacket.PacketType.HEARTBEAT);
             packet.set(0, "Heartbeat test message");
             sendPacket(packet);
+        } else {
+            connect();
         }
-        connect();
     }
 
     private void connect() {

@@ -10,6 +10,11 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -148,5 +153,17 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     @Override
     public void setOp(boolean b) {
         isOp = b;
+    }
+
+    @NotNull
+    @Override
+    public SocketAddress getAddress() {
+        try {
+            InetAddress address = InetAddress.getByName(plugin.getConfig().getString("ip"));
+            SocketAddress socketAddress = new InetSocketAddress(address, plugin.getConfig().getInt("port"));
+            return socketAddress;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

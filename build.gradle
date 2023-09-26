@@ -8,9 +8,18 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
 }
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:${property("spigot_api_version")}")
+
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    compileOnly("org.jetbrains:annotations:24.0.1")
+
 
     // https://mvnrepository.com/artifact/org.xsocket/xSocket
     implementation("org.xsocket:xSocket:${property("xsocket_version")}")

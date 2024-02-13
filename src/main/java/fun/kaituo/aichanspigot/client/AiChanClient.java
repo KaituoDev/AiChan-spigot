@@ -105,8 +105,7 @@ public class AiChanClient extends WebSocketClient {
 
     @Override
     public void onError(Exception e) {
-        plugin.getLogger().warning("发生内部错误！");
-        e.printStackTrace();
+        plugin.getLogger().warning("发生内部错误: " + e.getMessage());
     }
 
 }

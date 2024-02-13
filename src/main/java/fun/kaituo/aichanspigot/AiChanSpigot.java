@@ -1,15 +1,10 @@
 package fun.kaituo.aichanspigot;
 
 
-import com.macasaet.fernet.StringValidator;
-import com.macasaet.fernet.Validator;
-import fun.kaituo.aichanspigot.client.ClientHandler;
-import fun.kaituo.aichanspigot.client.SocketClient;
+import fun.kaituo.aichanspigot.client.AiChanClient;
 import fun.kaituo.aichanspigot.client.SocketPacket;
 import fun.kaituo.aichanspigot.listener.NotifyOnJoinAndLeaveListener;
-import fun.kaituo.aichanspigot.listener.WhitelistListener;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -17,61 +12,62 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class AiChanSpigot extends JavaPlugin implements Listener {
 
-    public final Set<String> pendingIds = new HashSet<>();
+    private String channelId;
 
-    public ClientHandler getHandler() {
-        return handler;
+    public String getChannelId() {
+        return channelId;
     }
 
-    private ClientHandler handler;
+    private FernetManager fernetManager;
 
-    public SocketClient getClient() {
+    public FernetManager getFernetManager() {
+        return fernetManager;
+    }
+
+    private AiChanClient client;
+
+    public AiChanClient getClient() {
         return client;
     }
 
-    private SocketClient client;
 
-    public AiChanSpigotRemoteConsoleCommandSender getCommandSender() {
-        return commandSender;
+    // Remote sender only works for non-native commands
+    private RemoteSender remoteSender;
+
+    public RemoteSender getRemoteSender() {
+        return remoteSender;
     }
 
-    private AiChanSpigotRemoteConsoleCommandSender commandSender;
+    // Console sender only works for native commands
+    private ConsoleSender consoleSender;
 
-    public final Validator<String> validator = new StringValidator() {
-    };
-
-
-    public void kickPlayerIfOnline(String name, String message) {
-        Bukkit.getScheduler().runTask(this, () -> {
-            Player p = Bukkit.getPlayer(name);
-            if (p == null || !p.isOnline()) {
-                return;
-            }
-            p.kickPlayer(message);
-        });
+    public ConsoleSender getConsoleSender() {
+        return consoleSender;
     }
 
     public void onEnable() {
         saveDefaultConfig();
+
+        try {
+            initializeComponents();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         registerEventIfEnabled("notify-on-join-and-quit", new NotifyOnJoinAndLeaveListener(this));
-        registerEventIfEnabled("enable-whitelist", new WhitelistListener(this));
         Bukkit.getPluginManager().registerEvents(this, this);
 
         getLogger().info("AiChanSpigot 已加载");
-
-        initializeComponents();
     }
 
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll((Plugin) this);
         this.client.close();
-        this.client = null;
         getLogger().info("AiChanSpigot 已卸载");
     }
 
@@ -80,10 +76,11 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
+        packet.setChannelId(channelId);
         String msg = String.format("%s: %s", e.getPlayer().getName(), e.getMessage());
         msg = msg.replaceAll("&.|§.", "");
-        packet.set(0, getConfig().getString("server-prefix") + msg);
+        packet.setContent(msg);
         this.client.sendPacket(packet);
     }
 
@@ -93,9 +90,16 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
         }
     }
 
-    private void initializeComponents() {
-        this.client = new SocketClient(this);
-        this.handler = new ClientHandler(this);
-        this.commandSender = new AiChanSpigotRemoteConsoleCommandSender(this);
+    private void initializeComponents() throws URISyntaxException, IllegalArgumentException {
+        try {
+            this.fernetManager = new FernetManager(getConfig().getString("fernet_key"));
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to initialize fernet manager!");
+        }
+        this.remoteSender = new RemoteSender(this);
+        this.consoleSender = new ConsoleSender(this, Bukkit.getConsoleSender());
+        String uriString = "ws://" + getConfig().getString("ip") + ":" + getConfig().getInt("port");
+        channelId = getConfig().getString("channel_id");
+        this.client = new AiChanClient(this, new URI(uriString));
     }
 }

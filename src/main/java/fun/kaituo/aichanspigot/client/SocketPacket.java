@@ -1,62 +1,68 @@
 package fun.kaituo.aichanspigot.client;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
+import com.google.gson.annotations.SerializedName;
 
 // Remember to update Packet on the other end
 public class SocketPacket {
-    public static final String DELIMITER = "|DELIMITER|";
-
-    //public static final int MAX_DATA_SIZE = 8;
 
     public enum PacketType {
-        HEARTBEAT, GROUP_TEXT, SERVER_TEXT, PLAYER_LOOKUP, PLAYER_STATUS, PLAYER_NOT_FOUND, LIST_REQUEST, SERVER_COMMAND,
+        HEARTBEAT, MESSAGE_TO_SERVER, MESSAGE_TO_CHANNEL, COMMAND, LIST_REQUEST
     }
+
+    public static final Gson GSON = new Gson();
+
+    @Expose
+    @SerializedName("packetType")
+    private final PacketType packetType;
+
+    @Expose
+    @SerializedName("channelId")
+    private String channelId;
+
+    @Expose
+    @SerializedName("content")
+    private String content;
 
     public SocketPacket(PacketType packetType) {
         this.packetType = packetType;
     }
-
-    public static SocketPacket parsePacket(String string) {
-        JsonObject packetObject = JsonParser.parseString(string).getAsJsonObject();
-        JsonArray contentArray =packetObject.get("content").getAsJsonArray();
-        SocketPacket result = new SocketPacket(
-                PacketType.valueOf(packetObject.get("packetType").getAsString())
-        );
-        if (contentArray != null) {
-            IntStream.range(0, contentArray.size()).forEach(
-                    i -> result.set(i, contentArray.get(i).getAsString())
-            );
-        }
-        return result;
+    @SuppressWarnings("unused")
+    public static SocketPacket fromJsonString(String string) {
+        return GSON.fromJson(string, SocketPacket.class);
     }
 
-    public void set(int index, String data) {
-        content.add(index, data);
+    @SuppressWarnings("unused")
+    public String toJsonString() {
+        return GSON.toJson(this);
     }
 
-    public String get(int index) {
-        return content.get(index);
-    }
+
+
 
     public PacketType getPacketType() {
         return packetType;
     }
 
-    public List<String> getContent() {
+    @SuppressWarnings("unused")
+    public String getChannelId() {
+        return channelId;
+    }
+
+    @SuppressWarnings("unused")
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
+
+    @SuppressWarnings("unused")
+    public String getContent() {
         return content;
     }
 
-    @Expose
-    private final PacketType packetType;
-
-    @Expose
-    private final List<String> content = new ArrayList<>();
+    @SuppressWarnings("unused")
+    public void setContent(String content) {
+        this.content = content;
+    }
 }

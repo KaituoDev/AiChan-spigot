@@ -20,9 +20,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compileOnly("org.jetbrains:annotations:24.0.1")
 
-
-    // https://mvnrepository.com/artifact/org.xsocket/xSocket
-    implementation("org.xsocket:xSocket:${property("xsocket_version")}")
+    // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
+    implementation("org.java-websocket:Java-WebSocket:1.5.6")
 
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation("com.google.code.gson:gson:${property("gson_version")}")

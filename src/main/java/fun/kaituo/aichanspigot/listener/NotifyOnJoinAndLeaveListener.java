@@ -16,10 +16,10 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        packet.set(0, String.format(
-                "%s%s[+]",
-                plugin.getConfig().getString("server-prefix"),
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
+        packet.setChannelId(plugin.getChannelId());
+        packet.setContent(String.format(
+                "%s[+]",
                 e.getPlayer().getName()
         ));
         plugin.getClient().sendPacket(packet);
@@ -27,10 +27,10 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        packet.set(0, String.format(
-                "%s%s[-]",
-                plugin.getConfig().getString("server-prefix"),
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
+        packet.setChannelId(plugin.getChannelId());
+        packet.setContent(String.format(
+                "%s[-]",
                 e.getPlayer().getName()
         ));
         plugin.getClient().sendPacket(packet);

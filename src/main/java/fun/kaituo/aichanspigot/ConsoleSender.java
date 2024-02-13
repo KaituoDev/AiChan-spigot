@@ -3,7 +3,6 @@ package fun.kaituo.aichanspigot;
 import fun.kaituo.aichanspigot.client.SocketPacket;
 import org.bukkit.Server;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.permissions.Permission;
@@ -13,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.SocketAddress;
 import java.util.Set;
 import java.util.UUID;
 

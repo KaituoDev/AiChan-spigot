@@ -8,20 +8,13 @@ import com.google.gson.annotations.SerializedName;
 // Remember to update Packet on the other end
 public class SocketPacket {
 
-    public enum PacketType {
-        HEARTBEAT, MESSAGE_TO_SERVER, MESSAGE_TO_CHANNEL, COMMAND, LIST_REQUEST
-    }
-
     public static final Gson GSON = new Gson();
-
     @Expose
     @SerializedName("packetType")
     private final PacketType packetType;
-
     @Expose
     @SerializedName("channelId")
     private String channelId;
-
     @Expose
     @SerializedName("content")
     private String content;
@@ -29,6 +22,7 @@ public class SocketPacket {
     public SocketPacket(PacketType packetType) {
         this.packetType = packetType;
     }
+
     @SuppressWarnings("unused")
     public static SocketPacket fromJsonString(String string) {
         return GSON.fromJson(string, SocketPacket.class);
@@ -38,9 +32,6 @@ public class SocketPacket {
     public String toJsonString() {
         return GSON.toJson(this);
     }
-
-
-
 
     public PacketType getPacketType() {
         return packetType;
@@ -64,5 +55,10 @@ public class SocketPacket {
     @SuppressWarnings("unused")
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @SuppressWarnings("unused")
+    public enum PacketType {
+        HEARTBEAT, MESSAGE_TO_SERVER, MESSAGE_TO_CHANNEL, COMMAND, LIST_REQUEST
     }
 }

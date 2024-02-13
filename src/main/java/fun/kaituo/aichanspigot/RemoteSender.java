@@ -3,7 +3,6 @@ package fun.kaituo.aichanspigot;
 import fun.kaituo.aichanspigot.client.SocketPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;

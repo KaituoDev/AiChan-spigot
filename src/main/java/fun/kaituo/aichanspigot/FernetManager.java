@@ -6,10 +6,9 @@ import com.macasaet.fernet.Token;
 import com.macasaet.fernet.Validator;
 
 public class FernetManager {
-    private final Key key;
-
     public final Validator<String> validator = new StringValidator() {
     };
+    private final Key key;
 
 
     @SuppressWarnings("unused")
@@ -18,7 +17,7 @@ public class FernetManager {
     }
 
     @SuppressWarnings("unused")
-    public FernetManager(String keyString){
+    public FernetManager(String keyString) {
         this.key = new Key(keyString);
     }
 

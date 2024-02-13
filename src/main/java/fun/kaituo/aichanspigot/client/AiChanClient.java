@@ -29,16 +29,15 @@ public class AiChanClient extends WebSocketClient {
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, this::keepAlive, heartbeatInterval, heartbeatInterval);
     }
 
-    public boolean sendPacket(SocketPacket packet) {
+    public void sendPacket(SocketPacket packet) {
         if (!isOpen()) {
             plugin.getLogger().warning("连接处于关闭状态，发送包失败");
             keepAlive();
-            return false;
+            return;
         }
         String data = GSON.toJson(packet);
         String encryptedData = plugin.getFernetManager().encrypt(data);
         send(encryptedData);
-        return true;
     }
 
     private void keepAlive() {
@@ -62,9 +61,7 @@ public class AiChanClient extends WebSocketClient {
         }
 
         switch (packet.getPacketType()) {
-            case MESSAGE_TO_SERVER -> {
-                Bukkit.broadcastMessage(groupMessagePrefix + packet.getContent());
-            }
+            case MESSAGE_TO_SERVER -> Bukkit.broadcastMessage(groupMessagePrefix + packet.getContent());
             case COMMAND -> {
                 String cmd = packet.getContent();
                 Bukkit.getScheduler().runTask(plugin, () -> {
@@ -82,18 +79,22 @@ public class AiChanClient extends WebSocketClient {
             case LIST_REQUEST -> {
                 SocketPacket listPacket = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
                 listPacket.setChannelId(plugin.getChannelId());
-                List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-                if (players.isEmpty()) {
-                    listPacket.setContent("当前无人在线");
-                } else {
-                    StringJoiner listMessage = new StringJoiner(", ");
-                    for (Player player : players) {
-                        listMessage.add(player.getName());
-                    }
-                    listPacket.setContent(String.format("当前有 %d 人在线: %s", players.size(), listMessage));
-                }
+                listPacket.setContent(getListMessage());
                 plugin.getClient().sendPacket(listPacket);
             }
+        }
+    }
+
+    private String getListMessage() {
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        if (players.isEmpty()) {
+            return "当前无人在线";
+        } else {
+            StringJoiner listMessage = new StringJoiner(", ");
+            for (Player player : players) {
+                listMessage.add(player.getName());
+            }
+            return String.format("当前有 %d 人在线: %s", players.size(), listMessage);
         }
     }
 

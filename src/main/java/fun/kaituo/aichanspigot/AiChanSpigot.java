@@ -18,33 +18,28 @@ import java.net.URISyntaxException;
 public class AiChanSpigot extends JavaPlugin implements Listener {
 
     private String channelId;
+    private FernetManager fernetManager;
+    private AiChanClient client;
+    // Remote sender only works for non-native commands
+    private RemoteSender remoteSender;
+    // Console sender only works for native commands
+    private ConsoleSender consoleSender;
 
     public String getChannelId() {
         return channelId;
     }
 
-    private FernetManager fernetManager;
-
     public FernetManager getFernetManager() {
         return fernetManager;
     }
-
-    private AiChanClient client;
 
     public AiChanClient getClient() {
         return client;
     }
 
-
-    // Remote sender only works for non-native commands
-    private RemoteSender remoteSender;
-
     public RemoteSender getRemoteSender() {
         return remoteSender;
     }
-
-    // Console sender only works for native commands
-    private ConsoleSender consoleSender;
 
     public ConsoleSender getConsoleSender() {
         return consoleSender;

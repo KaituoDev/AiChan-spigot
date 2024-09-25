@@ -18,7 +18,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:${property("spigot_api_version")}")
 
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
-    compileOnly("org.jetbrains:annotations:24.1.0")
+    compileOnly("org.jetbrains:annotations:25.0.0")
 
 
     // https://mvnrepository.com/artifact/org.xsocket/xSocket

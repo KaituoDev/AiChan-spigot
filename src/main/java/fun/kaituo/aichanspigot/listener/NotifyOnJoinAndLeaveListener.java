@@ -17,11 +17,18 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        packet.set(0, String.format(
+        String welcomeMessage = String.format(
                 "%s%s[+]",
                 plugin.getConfig().getString("server-prefix"),
                 e.getPlayer().getName()
-        ));
+        );
+        if (!e.getPlayer().hasPlayedBefore()) {
+            welcomeMessage += String.format(
+                    "\n%s玩家 %s 首次加入了服务器！",
+                    plugin.getConfig().getString("server-prefix"),
+                    e.getPlayer().getName());
+        }
+        packet.set(0, welcomeMessage);
         plugin.getClient().sendPacket(packet);
     }
 

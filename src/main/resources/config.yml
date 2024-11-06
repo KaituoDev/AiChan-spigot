@@ -1,7 +1,7 @@
 ip: 127.0.0.1
 port: 23333
 server-name: '服务器'
-server-prefix: '[服务器|s]'
+server-prefix: '§7[§b服务器§7]'
 group-message-prefix: '§7[§b群§7]§r '
 trigger: 's'
 broadcast-trigger: 'all'

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static fun.kaituo.aichanspigot.Utils.fixMinecraftColor;
+
 public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnectHandler {
     private final AiChanSpigot plugin;
 
@@ -27,6 +29,8 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
 
     private final String trigger;
     private final String broadcastTrigger;
+
+
 
     public ClientHandler(AiChanSpigot plugin) {
         FileConfiguration config = plugin.getConfig();
@@ -69,10 +73,15 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
         FileConfiguration config = plugin.getConfig();
 
         switch (packet.getPacketType()) {
+            // Logic changed. Now /say command will send message to all servers.
+            // Chat from other servers will also be broadcasted.
+            // So only chat from the server itself will not be broadcasted.
             case SERVER_TEXT -> {
-                if (packet.get(0).equals(this.trigger) || packet.get(0).equals(this.broadcastTrigger)) {
-                    Bukkit.broadcastMessage(groupMessagePrefix + packet.get(1));
+                if (packet.get(0).equals(this.trigger)) {
+                    break;
                 }
+                String message = fixMinecraftColor(packet.get(1));
+                Bukkit.broadcastMessage(groupMessagePrefix + message);
             }
             case PLAYER_NOT_FOUND -> {
                 String name = packet.get(0);

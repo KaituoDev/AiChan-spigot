@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static fun.kaituo.aichanspigot.Utils.removeMinecraftColor;
+
 public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleCommandSender {
 
     private final AiChanSpigot plugin;
@@ -35,7 +37,7 @@ public class AiChanSpigotRemoteConsoleCommandSender implements RemoteConsoleComm
     @Override
     public void sendMessage(@NotNull String s) {
         SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
-        String msg = s.replaceAll("&.|§.", "");
+        String msg = removeMinecraftColor(s);
         packet.set(0, serverPrefix + msg);
         plugin.getClient().sendPacket(packet);
     }

@@ -22,7 +22,7 @@ public class WhitelistListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         String name = player.getName();
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.PLAYER_LOOKUP);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.PLAYER_LOOKUP_REQUEST_TO_BOT);
         packet.set(0, name);
 
         if (!plugin.getClient().sendPacket(packet)) {

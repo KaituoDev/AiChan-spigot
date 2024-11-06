@@ -16,7 +16,7 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
         String welcomeMessage = String.format(
                 "%s%s[+]",
                 plugin.getConfig().getString("server-prefix"),
@@ -34,7 +34,7 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
         packet.set(0, String.format(
                 "%s%s[-]",
                 plugin.getConfig().getString("server-prefix"),

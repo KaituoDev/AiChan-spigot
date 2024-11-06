@@ -53,7 +53,7 @@ public class SocketClient {
 
     private void keepAlive() {
         if (this.nbc != null && this.nbc.isOpen()) {
-            SocketPacket packet = new SocketPacket(SocketPacket.PacketType.HEARTBEAT);
+            SocketPacket packet = new SocketPacket(SocketPacket.PacketType.HEARTBEAT_TO_BOT);
             packet.set(0, "Heartbeat test message");
             sendPacket(packet);
         } else {

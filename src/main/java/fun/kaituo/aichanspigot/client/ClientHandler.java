@@ -25,8 +25,6 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
 
     private final String serverName;
 
-    private final String groupMessagePrefix;
-
     private final String trigger;
     private final String broadcastTrigger;
 
@@ -39,7 +37,6 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
         this.serverName = config.getString("server-name");
         this.trigger = config.getString("trigger");
         this.broadcastTrigger = config.getString("broadcast-trigger");
-        this.groupMessagePrefix = config.getString("group-message-prefix");
     }
 
     public boolean onConnect(INonBlockingConnection nbc) throws BufferUnderflowException {
@@ -76,21 +73,21 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
             // Logic changed. Now /say command will send message to all servers.
             // Chat from other servers will also be broadcasted.
             // So only chat from the server itself will not be broadcasted.
-            case SERVER_TEXT -> {
+            case GROUP_CHAT_TO_SERVER -> {
                 if (packet.get(0).equals(this.trigger)) {
                     break;
                 }
                 String message = fixMinecraftColor(packet.get(1));
-                Bukkit.broadcastMessage(groupMessagePrefix + message);
+                Bukkit.broadcastMessage(message);
             }
-            case PLAYER_NOT_FOUND -> {
+            case PLAYER_NOT_FOUND_TO_SERVER -> {
                 String name = packet.get(0);
                 plugin.pendingIds.remove(name);
                 if (config.getBoolean("enable-whitelist")) {
                     plugin.kickPlayerIfOnline(name, config.getString("not-whitelisted-message"));
                 }
             }
-            case PLAYER_STATUS -> {
+            case PLAYER_LOOKUP_RESULT_TO_SERVER -> {
                 String name = packet.get(2);
                 plugin.pendingIds.remove(name);
 
@@ -103,8 +100,8 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
                     plugin.kickPlayerIfOnline(name, config.getString("timeout-message"));
                 }
             }
-            case LIST_REQUEST -> {
-                SocketPacket listPacket = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
+            case LIST_REQUEST_TO_SERVER -> {
+                SocketPacket listPacket = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
                 List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
                 if (players.isEmpty()) {
                     listPacket.set(0, String.format("%s无人在线", this.serverName));
@@ -118,7 +115,7 @@ public class ClientHandler implements IDataHandler, IConnectHandler, IDisconnect
                 }
                 plugin.getClient().sendPacket(listPacket);
             }
-            case SERVER_COMMAND -> {
+            case COMMAND_TO_SERVER -> {
                 if (packet.get(0).equals(this.trigger) || packet.get(0).equals(this.broadcastTrigger)) {
                     Bukkit.getScheduler().runTask(
                             plugin,

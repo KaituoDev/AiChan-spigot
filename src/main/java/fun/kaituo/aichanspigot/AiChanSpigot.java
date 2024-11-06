@@ -82,11 +82,11 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.GROUP_TEXT);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_CHAT_TO_BOT);
         String msg = String.format("%s: %s", e.getPlayer().getName(), e.getMessage());
         msg = fixMinecraftColor(msg);
         packet.set(0, getConfig().getString("trigger"));
-        packet.set(1, getConfig().getString("server-prefix") + msg);
+        packet.set(1, getConfig().getString("server-prefix") + " " + msg);
         this.client.sendPacket(packet);
     }
 

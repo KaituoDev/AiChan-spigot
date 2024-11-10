@@ -8,7 +8,9 @@ import fun.kaituo.aichanspigot.client.SocketClient;
 import fun.kaituo.aichanspigot.client.SocketPacket;
 import fun.kaituo.aichanspigot.listener.NotifyOnJoinAndLeaveListener;
 import fun.kaituo.aichanspigot.listener.WhitelistListener;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -37,12 +39,13 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     }
 
     private SocketClient client;
+    private String serverPrefix;
 
-    public AiChanSpigotRemoteConsoleCommandSender getCommandSender() {
+    public CommandSender getCommandSender() {
         return commandSender;
     }
 
-    private AiChanSpigotRemoteConsoleCommandSender commandSender;
+    private CommandSender commandSender;
 
     public final Validator<String> validator = new StringValidator() {
     };
@@ -99,6 +102,12 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     private void initializeComponents() {
         this.client = new SocketClient(this);
         this.handler = new ClientHandler(this);
-        this.commandSender = new AiChanSpigotRemoteConsoleCommandSender(this);
+        this.serverPrefix = getConfig().getString("server-prefix");
+        this.commandSender = Bukkit.createCommandSender( component -> {
+            SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
+            String message = PlainTextComponentSerializer.plainText().serialize(component);
+            packet.set(0, fixMinecraftColor(serverPrefix + " " + message));
+            client.sendPacket(packet);
+        });
     }
 }

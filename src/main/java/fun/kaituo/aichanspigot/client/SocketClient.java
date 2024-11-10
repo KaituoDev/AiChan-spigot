@@ -10,12 +10,19 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.xsocket.connection.NonBlockingConnection;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 
 public class SocketClient {
     private final AiChanSpigot plugin;
     private NonBlockingConnection nbc;
     private final String ip;
     private final int port;
+
+    public SocketAddress getSocketAddress() {
+        return new InetSocketAddress(nbc.getRemoteAddress(), nbc.getRemotePort());
+    }
 
     public SocketClient(AiChanSpigot plugin) {
         FileConfiguration config = plugin.getConfig();

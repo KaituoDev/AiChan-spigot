@@ -6,7 +6,7 @@ plugins {
 repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+    maven { url "https://repo.papermc.io/repository/maven-public/" }
 }
 compileJava.options.encoding = 'UTF-8'
 
@@ -15,7 +15,7 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:${property("spigot_api_version")}")
+    compileOnly("io.papermc.paper:paper-api:${property("paper_api_version")}")
 
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compileOnly("org.jetbrains:annotations:26.0.1")

@@ -4,7 +4,9 @@ package fun.kaituo.aichanspigot;
 import fun.kaituo.aichanspigot.client.AiChanClient;
 import fun.kaituo.aichanspigot.client.SocketPacket;
 import fun.kaituo.aichanspigot.listener.NotifyOnJoinAndLeaveListener;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -15,19 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static fun.kaituo.aichanspigot.Utils.fixMinecraftColor;
+
 public class AiChanSpigot extends JavaPlugin implements Listener {
 
-    private String channelId;
     private FernetManager fernetManager;
     private AiChanClient client;
-    // Remote sender only works for non-native commands
-    private RemoteSender remoteSender;
-    // Console sender only works for native commands
-    private ConsoleSender consoleSender;
 
-    public String getChannelId() {
-        return channelId;
-    }
 
     public FernetManager getFernetManager() {
         return fernetManager;
@@ -36,14 +32,13 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     public AiChanClient getClient() {
         return client;
     }
+    private String serverPrefix;
 
-    public RemoteSender getRemoteSender() {
-        return remoteSender;
+    public CommandSender getCommandSender() {
+        return commandSender;
     }
 
-    public ConsoleSender getConsoleSender() {
-        return consoleSender;
-    }
+    private CommandSender commandSender;
 
     public void onEnable() {
         saveDefaultConfig();
@@ -71,11 +66,11 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
-        packet.setChannelId(channelId);
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_CHAT_TO_BOT);
         String msg = String.format("%s: %s", e.getPlayer().getName(), e.getMessage());
-        msg = msg.replaceAll("&.|§.", "");
-        packet.setContent(msg);
+        msg = fixMinecraftColor(msg);
+        packet.add(0, getConfig().getString("trigger"));
+        packet.add(1, getConfig().getString("server-prefix") + " " + msg);
         this.client.sendPacket(packet);
     }
 
@@ -91,10 +86,14 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize fernet manager!");
         }
-        this.remoteSender = new RemoteSender(this);
-        this.consoleSender = new ConsoleSender(this, Bukkit.getConsoleSender());
+        this.serverPrefix = getConfig().getString("server-prefix");
+        this.commandSender = Bukkit.createCommandSender( component -> {
+            SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
+            String message = PlainTextComponentSerializer.plainText().serialize(component);
+            packet.add(0, fixMinecraftColor(serverPrefix + " " + message));
+            client.sendPacket(packet);
+        });
         String uriString = "ws://" + getConfig().getString("ip") + ":" + getConfig().getInt("port");
-        channelId = getConfig().getString("channel_id");
         this.client = new AiChanClient(this, new URI(uriString));
     }
 }

@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // Remember to update Packet on the other end
 public class SocketPacket {
 
@@ -13,11 +16,8 @@ public class SocketPacket {
     @SerializedName("packetType")
     private final PacketType packetType;
     @Expose
-    @SerializedName("channelId")
-    private String channelId;
-    @Expose
     @SerializedName("content")
-    private String content;
+    private final List<String> content = new ArrayList<>();
 
     public SocketPacket(PacketType packetType) {
         this.packetType = packetType;
@@ -38,27 +38,25 @@ public class SocketPacket {
     }
 
     @SuppressWarnings("unused")
-    public String getChannelId() {
-        return channelId;
+    public List<String> getContent() {
+        return new ArrayList<>(content);
     }
 
     @SuppressWarnings("unused")
-    public void setChannelId(String channelId) {
-        this.channelId = channelId;
+    public String get(int index) {
+        return content.get(index);
     }
 
     @SuppressWarnings("unused")
-    public String getContent() {
-        return content;
-    }
-
-    @SuppressWarnings("unused")
-    public void setContent(String content) {
-        this.content = content;
+    public void add(int index, String data) {
+        this.content.add(index, data);
     }
 
     @SuppressWarnings("unused")
     public enum PacketType {
-        HEARTBEAT, MESSAGE_TO_SERVER, MESSAGE_TO_CHANNEL, COMMAND, LIST_REQUEST
+        HEARTBEAT_TO_BOT, SERVER_CHAT_TO_BOT, GROUP_CHAT_TO_SERVER,
+        PLAYER_LOOKUP_REQUEST_TO_BOT, PLAYER_LOOKUP_RESULT_TO_SERVER,
+        PLAYER_NOT_FOUND_TO_SERVER, LIST_REQUEST_TO_SERVER, COMMAND_TO_SERVER,
+        SERVER_INFORMATION_TO_BOT
     }
 }

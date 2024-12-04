@@ -1,7 +1,9 @@
 ip: 127.0.0.1
 port: 23333
-channel_id: '1145141919810'
-group-message-prefix: '§7[§b群§7]§r '
+server-name: '生存服'
+server-prefix: '§8[§a生存§8]§r'
+trigger: 's'
+broadcast-trigger: 'all'
 fernet_key: 'mykey'
 notify-on-join-and-quit: true
 # in server ticks

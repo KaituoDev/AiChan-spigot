@@ -16,21 +16,28 @@ public class NotifyOnJoinAndLeaveListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
-        packet.setChannelId(plugin.getChannelId());
-        packet.setContent(String.format(
-                "%s[+]",
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
+        String welcomeMessage = String.format(
+                "%s%s[+]",
+                plugin.getConfig().getString("server-prefix"),
                 e.getPlayer().getName()
-        ));
+        );
+        if (!e.getPlayer().hasPlayedBefore()) {
+            welcomeMessage += String.format(
+                    "\n%s玩家 %s 首次加入了服务器！",
+                    plugin.getConfig().getString("server-prefix"),
+                    e.getPlayer().getName());
+        }
+        packet.add(0, welcomeMessage);
         plugin.getClient().sendPacket(packet);
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.MESSAGE_TO_CHANNEL);
-        packet.setChannelId(plugin.getChannelId());
-        packet.setContent(String.format(
-                "%s[-]",
+        SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
+        packet.add(0, String.format(
+                "%s%s[-]",
+                plugin.getConfig().getString("server-prefix"),
                 e.getPlayer().getName()
         ));
         plugin.getClient().sendPacket(packet);

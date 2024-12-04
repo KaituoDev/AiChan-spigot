@@ -64,7 +64,6 @@ public class AiChanClient extends WebSocketClient {
 
     @Override
     public void onMessage(String s) {
-        FileConfiguration config = plugin.getConfig();
         String data = plugin.getFernetManager().decrypt(s);
         SocketPacket packet = SocketPacket.fromJsonString(data);
 
@@ -99,19 +98,6 @@ public class AiChanClient extends WebSocketClient {
                     );
                 }
             }
-        }
-    }
-
-    private String getListMessage() {
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-        if (players.isEmpty()) {
-            return "当前无人在线";
-        } else {
-            StringJoiner listMessage = new StringJoiner(", ");
-            for (Player player : players) {
-                listMessage.add(player.getName());
-            }
-            return String.format("当前有 %d 人在线: %s", players.size(), listMessage);
         }
     }
 

@@ -68,33 +68,36 @@ public class AiChanClient extends WebSocketClient {
         SocketPacket packet = SocketPacket.fromJsonString(data);
 
         switch (packet.getPacketType()) {
-            case GROUP_CHAT_TO_SERVER -> {
+            case BOT_CHAT_TO_SERVER -> {
                 if (packet.get(0).equals(this.trigger)) {
                     break;
                 }
                 String message = fixMinecraftColor(packet.get(1));
                 Bukkit.broadcastMessage(message);
             }
-            case LIST_REQUEST_TO_SERVER -> {
-                SocketPacket listPacket = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
+            case BOT_LIST_REQUEST_TO_SERVER -> {
+                SocketPacket listPacket = new SocketPacket(SocketPacket.PacketType.SERVER_COMMAND_FEEDBACK_TO_BOT);
+                String contextJson = packet.get(0);
+                listPacket.add(0, contextJson);
                 List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
                 if (players.isEmpty()) {
-                    listPacket.add(0, String.format("%s无人在线", this.serverName));
+                    listPacket.add(1, String.format("%s无人在线", this.serverName));
                 } else {
                     StringJoiner listMessage = new StringJoiner(", ");
                     for (Player player : players) {
                         listMessage.add(player.getName());
                     }
 
-                    listPacket.add(0, String.format("%s有 %d 人在线: %s", this.serverName, players.size(), listMessage));
+                    listPacket.add(1, String.format("%s有 %d 人在线: %s", this.serverName, players.size(), listMessage));
                 }
                 plugin.getClient().sendPacket(listPacket);
             }
-            case COMMAND_TO_SERVER -> {
-                if (packet.get(0).equals(this.trigger) || packet.get(0).equals(this.broadcastTrigger)) {
+            case BOT_COMMAND_TO_SERVER -> {
+                String contextJson = packet.get(0);
+                if (packet.get(1).equals(this.trigger) || packet.get(1).equals(this.broadcastTrigger)) {
                     Bukkit.getScheduler().runTask(
                             plugin,
-                            () -> Bukkit.dispatchCommand(plugin.getCommandSender(), packet.get(1))
+                            () -> plugin.executeBotCommand(packet.get(2), contextJson)
                     );
                 }
             }

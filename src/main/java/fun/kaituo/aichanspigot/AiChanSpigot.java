@@ -35,12 +35,6 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
     }
     private String serverPrefix;
 
-    public CommandSender getCommandSender() {
-        return commandSender;
-    }
-
-    private CommandSender commandSender;
-
     public void onEnable() {
         saveDefaultConfig();
 
@@ -88,13 +82,22 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
             throw new IllegalStateException("Failed to initialize fernet manager!");
         }
         this.serverPrefix = getConfig().getString("server-prefix");
-        this.commandSender = Bukkit.createCommandSender( component -> {
-            SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_INFORMATION_TO_BOT);
-            String message = PlainTextComponentSerializer.plainText().serialize(component);
-            packet.add(0, fixMinecraftColor(serverPrefix + " " + message));
-            client.sendPacket(packet);
-        });
         String uriString = "ws://" + getConfig().getString("ip") + ":" + getConfig().getInt("port");
         this.client = new AiChanClient(this, new URI(uriString));
+    }
+
+    public void executeBotCommand(String cmd, String contextJson) {
+        Bukkit.getScheduler().runTask(this, () -> {
+            CommandSender contextualSender = Bukkit.createCommandSender(component -> {
+                SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_COMMAND_FEEDBACK_TO_BOT);
+                String message = PlainTextComponentSerializer.plainText().serialize(component);
+
+                packet.add(0, contextJson);
+                packet.add(1, fixMinecraftColor(serverPrefix + " " + message));
+
+                client.sendPacket(packet);
+            });
+            Bukkit.dispatchCommand(contextualSender, cmd);
+        });
     }
 }

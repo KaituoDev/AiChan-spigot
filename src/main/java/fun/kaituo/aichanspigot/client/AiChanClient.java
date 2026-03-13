@@ -60,6 +60,12 @@ public class AiChanClient extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         plugin.getLogger().info("已连接到WebSocket服务器: " + getRemoteSocketAddress());
+
+        SocketPacket helloPacket = new SocketPacket(SocketPacket.PacketType.SERVER_HELLO_TO_BOT);
+        helloPacket.add(0, serverName);
+        helloPacket.add(1, trigger);
+        helloPacket.add(2, broadcastTrigger);
+        sendPacket(helloPacket);
     }
 
     @Override

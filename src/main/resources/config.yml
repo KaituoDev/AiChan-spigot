@@ -8,3 +8,9 @@ fernet_key: 'mykey'
 notify-on-join-and-quit: true
 # in server ticks
 heart-beat-interval: 900
+enable-whitelist: false
+# in seconds
+whitelist-timeout: 1
+not-whitelisted-message: '请加QQ群 594048732 自助获取白名单！'
+banned-message: '你已被封禁！请加QQ群 594048732 咨询解封！'
+timeout-message: '白名单认证超时，请稍后重试！'

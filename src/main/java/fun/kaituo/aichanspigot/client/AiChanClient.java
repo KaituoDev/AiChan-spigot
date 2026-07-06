@@ -107,6 +107,33 @@ public class AiChanClient extends WebSocketClient {
                     );
                 }
             }
+            case BOT_PLAYER_LOOKUP_RESULT_TO_SERVER -> {
+                if (!plugin.getConfig().getBoolean("enable-whitelist")) {
+                    break;
+                }
+                String mcId = packet.get(0);
+                String sessionId = packet.get(1);
+                boolean isAuthorized = Boolean.parseBoolean(packet.get(2));
+                boolean isBanned = Boolean.parseBoolean(packet.get(3));
+
+                AiChanSpigot.AuthResult pending = plugin.getPendingAuths().remove(sessionId);
+                if (pending != null) {
+                    if (isBanned) {
+                        pending.complete(false, plugin.getConfig().getString("banned-message"));
+                    } else if (!isAuthorized) {
+                        pending.complete(false, plugin.getConfig().getString("not-whitelisted-message"));
+                    } else {
+                        pending.complete(true, null);
+                    }
+                }
+            }
+            case BOT_PLAYER_BAN_TO_SERVER -> {
+                if (!plugin.getConfig().getBoolean("enable-whitelist")) {
+                    break;
+                }
+                String mcId = packet.get(0);
+                plugin.kickPlayerIfOnline(mcId, plugin.getConfig().getString("banned-message"));
+            }
         }
     }
 

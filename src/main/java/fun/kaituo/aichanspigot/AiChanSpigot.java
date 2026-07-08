@@ -67,7 +67,7 @@ public class AiChanSpigot extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChatEvent(AsyncPlayerChatEvent e) {
-        if (e.isCancelled()) {
+        if (e.isCancelled() || !getConfig().getBoolean("sync-chat")) {
             return;
         }
         SocketPacket packet = new SocketPacket(SocketPacket.PacketType.SERVER_CHAT_TO_BOT);

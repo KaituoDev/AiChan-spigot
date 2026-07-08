@@ -78,6 +78,9 @@ public class AiChanClient extends WebSocketClient {
                 if (packet.get(0).equals(this.trigger)) {
                     break;
                 }
+                if (!plugin.getConfig().getBoolean("sync-chat")) {
+                    break;
+                }
                 String message = fixMinecraftColor(packet.get(1));
                 Bukkit.broadcastMessage(message);
             }

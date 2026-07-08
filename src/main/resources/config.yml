@@ -6,6 +6,7 @@ trigger: 's'
 broadcast-trigger: 'all'
 fernet_key: 'mykey'
 notify-on-join-and-quit: true
+sync-chat: true
 # in server ticks
 heart-beat-interval: 900
 enable-whitelist: false
